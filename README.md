@@ -12,25 +12,25 @@ A tool to map rdforum.org RDFGS based on a provided route
 $> rdfgs-mapper [path_to_kml_file.kml]
 
 ### Required data (not automated yet)
-1. A US state shape file from the following URL  - INCLUDED IN ALPHA VERSION
+#### 1. A US state shape file from the following URL  - INCLUDED IN ALPHA VERSION
 (States section). 500k is preferred, but smaller should work. 
 https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html
 
 Direct link: https://www2.census.gov/geo/tiger/GENZ2018/shp/cb_2018_us_state_500k.zip
 a. Unzip this file and place it in the "data" folder, specifically as data/cb_2018_us_state_500k/[unzipped contents]
 
-2. RDFGS-Archive.xls - INCLUDED IN ALPHA VERSION
+#### 2. RDFGS-Archive.xls - INCLUDED IN ALPHA VERSION
 This is currently provided, but is from 2017, and is primarily for testing rather than accuracy. The current version was taken from https://www.rdforum.org/threads/59672/, then converted to xls to work with python
 
-3. A route of your choosing! This is the fun part.
-Here is how it's down:
-a. Go to google.com/maps/d
-b. click "Create a new map" in the top left. Wait for the map to appear
-c. underneath the search bar, near the top of the page, there is an icon that, when hovered, says "Add Directions". Click this, and a new layer should appear
-d. On the left side of the screen, there is now a Untitled layer that says "Driving". Modify the start and end to your liking, and a blue line should appear. Add as many stops/destinations as wanted
-    pro tip: you can drag the line to manually change the route
-e. in the top left, to the right of "untitled map" click the 3 dots. A dropdown box should appear. Click "Export to KML/KMZ"
-f. Click the box that says "entire map" and change it to Directions from [location] to [location]
-g. Check the box that says "Export as KML instead of KMZ"
-e. Download it!
+#### 3. A route of your choosing! This is the fun part.\
+Here is how it's done:\
+a. Go to google.com/maps/d \
+b. click "Create a new map" in the top left. Wait for the map to appear\
+c. underneath the search bar, near the top of the page, there is an icon that, when hovered, says "Add Directions". Click this, and a new layer should appear\
+d. On the left side of the screen, there is now a Untitled layer that says "Driving". Modify the start and end to your liking, and a blue line should appear. Add as many stops/destinations as wanted\
+    pro tip: you can drag the line to manually change the route\
+e. in the top left, to the right of "untitled map" click the 3 dots. A dropdown box should appear. Click "Export to KML/KMZ"\
+f. Click the box that says "entire map" and change it to Directions from [location] to [location]\
+g. Check the box that says "Export as KML instead of KMZ"\
+e. Download it!\
 
