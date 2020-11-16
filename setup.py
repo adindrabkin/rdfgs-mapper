@@ -1,5 +1,4 @@
 import setuptools
-from glob import glob
 
 setuptools.setup(
     name='rdfgs-mapper',
@@ -16,10 +15,12 @@ setuptools.setup(
         "descartes",  # required for visualize
     ],
     include_package_data=True,
-
+#    package_data={
+#        'rdfgs_map_data': ['*', '*/*', '*/*/*'],
+#    },
     entry_points={
         'console_scripts': [
-            'rdfgs-mapper=bin.rdfgs_mapper.rdfgs_mapper:run'
+            'rdfgs-mapper=rdfgs_mapper.rdfgs_mapper.rdfgs_mapper:run'
         ]
     }
 )

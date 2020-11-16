@@ -3,9 +3,9 @@ main file fur running the rdfgs script
 """
 import sys
 
-import bin.rdfgs_mapper.location_checker as location_checker
-from bin.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
-from bin.visualize import visualize
+import rdfgs_mapper.rdfgs_mapper.location_checker as location_checker
+from rdfgs_mapper.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
+from rdfgs_mapper.visualize import visualize
 
 
 def display_route(state_polys, county_polys, usr_kml):

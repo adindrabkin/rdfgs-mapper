@@ -3,7 +3,7 @@ loader for the RDFGS survey
 """
 
 import xlrd
-from bin import cfg
+from rdfgs_mapper import cfg
 
 
 class Rdfgs_Xl:
