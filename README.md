@@ -39,7 +39,7 @@ e. Download it!\
 #### Special Windows Steps (3b)
 Make sure NONE of the following have older versions installed (you may need to manually remove older versions of python). Once done, do the following commands, in the following order:\
 pip install wheel\
-pip install pipwin\
+pip install pipwin
 
 pipwin install numpy\
 pipwin install pandas\
@@ -48,4 +48,4 @@ pipwin install gdal\
 pipwin install fiona\
 pipwin install pyproj\
 pipwin install descartes\
-pipwin install geopandas\
+pipwin install geopandas
