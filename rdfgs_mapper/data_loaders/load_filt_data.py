@@ -1,4 +1,4 @@
-from bin import cfg
+from rdfgs_mapper import cfg
 import geopandas as gpd
 from shapely.strtree import STRtree
 from shapely.geometry import MultiPolygon
