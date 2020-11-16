@@ -6,6 +6,7 @@ A tool to map rdforum.org RDFGS based on a provided route
 1. Download the latest version of python (https://www.python.org/)
 2. Verify that all the required data is satisfied (including the route of your choosing!)
 3. Using the terminal, navigate to the rdfgs-mapper main directory
+3b. If you are on windows, please follow the "windows" steps at the bottom of the readme before you continue
 4. run "pip3 install ." in the rdfgs-mapper main directory
 
 #### usage
@@ -34,3 +35,17 @@ f. Click the box that says "entire map" and change it to Directions from [locati
 g. Check the box that says "Export as KML instead of KMZ"\
 e. Download it!\
 
+
+#### Special Windows Steps (3b)
+Make sure NONE of the following have older versions installed (you may need to manually remove older versions of python). Once done, do the following commands, in the following order:\
+pip install wheel\
+pip install pipwin\
+
+pipwin install numpy\
+pipwin install pandas\
+pipwin install shapely\
+pipwin install gdal\
+pipwin install fiona\
+pipwin install pyproj\
+pipwin install descartes\
+pipwin install geopandas\
