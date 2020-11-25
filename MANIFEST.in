@@ -1,2 +1,4 @@
 include rdfgs_mapper/rdfgs_data/*
 include rdfgs_mapper/rdfgs_data/cb_2018_us_state_500k/*
+include rdfgs_mapper/rdfgs_data/cb_2018_us_county_500k/*
+

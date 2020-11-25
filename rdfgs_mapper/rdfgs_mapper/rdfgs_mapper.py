@@ -4,6 +4,7 @@ main file fur running the rdfgs script
 import sys
 
 import rdfgs_mapper.rdfgs_mapper.location_checker as location_checker
+from rdfgs_mapper import cfg
 from rdfgs_mapper.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
 from rdfgs_mapper.visualize import visualize
 
@@ -55,20 +56,28 @@ def run():
         exit(1)
     usr_data = load_user_route.run(usr_kml)  # {'route': linestring, 'start': point, 'end': point}
     print(f"locating {usr_data['start']} to {usr_data['end']}")
-    state_tree, state_index, polys = load_filt_data.load_states(return_polys=True)
-
+    state_tree, state_index, state_polys = load_filt_data.load_states(return_polys=True)
     found_states = location_checker.points_in_polytree(usr_data['route'], state_tree, state_index)
 
+    # mapping state abbr to statefp
+    found_state_fps = [str(cfg.ST_ABBRS[st]).zfill(2) for st in found_states]
+    # locating counties
+    county_tree, county_index, county_polys = load_filt_data.load_counties(found_state_fps, return_polys=True)
+    found_counties = location_checker.points_in_polytree(usr_data['route'], county_tree, county_index)
+
+    #
     print("Located the following states:")
     print("note: general state info is not included yet. Check rdfgs.rdforum.org for state summaries")
 
     rdfgs = load_rdfgs_xls.Rdfgs_Xl()
     state_results = []
+
     for state in found_states:
         state_police = rdfgs.get_state_police(state)
         state_police['name'] = state
         state_results.append(state_police)
+
     tabulate_result(state_results, title="State Police")
-    visualize.visualize(polys, found_states=list(found_states.keys()), route=usr_data)
+    visualize.visualize(state_polys, found_states=list(found_states.keys()), route=usr_data)
 
 
