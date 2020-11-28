@@ -22,7 +22,7 @@ a. Unzip this file and place it in the "data" folder, specifically as data/cb_20
 #### 2. RDFGS-Archive.xls - INCLUDED IN ALPHA VERSION
 This is currently provided, but is from 2017, and is primarily for testing rather than accuracy. The current version was taken from https://www.rdforum.org/threads/59672/, then converted to xls to work with python
 
-#### 3. A route of your choosing! This is the fun part.\
+#### 3. A route of your choosing! This is the fun part.
 Here is how it's done:\
 a. Go to google.com/maps/d \
 b. click "Create a new map" in the top left. Wait for the map to appear\
