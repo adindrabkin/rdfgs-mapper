@@ -40,6 +40,22 @@ class Rdfgs_Xl:
         row_info = self.get_row_info(st, rowidx)
         return row_info
 
+    def get_state_counties(self, state_abbr, county_names):
+        """
+        get all matching counties for each state
+        :param state_abbr: the abbr of the state (i.e CA)
+        :param county_names: the county name(s), list/str. Do not include " County" at the end
+        :return: {county_name: {LSR: Bool, POP: Bool, ... , Notes: ""}}
+        """
+        county_row_info = {}
+        st = self.get_state(state_abbr)
+        for county in list(county_names):
+            county += " County"  # adding " County" to the end
+            rowidx = self.find_row(st, county)
+            row_info = self.get_row_info(st, rowidx)
+            county_row_info[county] = row_info
+        return county_row_info
+
 
     def cell_is_marked(self, bgx_color):
         """
@@ -59,7 +75,7 @@ class Rdfgs_Xl:
         row_info = {}
         if rowidx is None:  # handling where nothing is found
             row_info = {self.headers[i]: "unk" for i in range(2, 10)}
-            row_info["notes"] = "Not found. Sorry Wyoming users"
+            row_info["notes"] = ""
             return row_info
         for i in range(2, 10):  # boxs of LSR to TSR
             xfx = sheet.cell_xf_index(rowidx, i)
@@ -74,14 +90,14 @@ class Rdfgs_Xl:
         row_info["notes"] = sheet.cell(rowidx, 10).value
         return row_info
 
-    def find_row(self, sheet, row_str):
+    def find_row(self, sheet, row_str, colid=0):
         """
         find the first row of a sheet matching row_str
         :param sheet: sheet to search
         :param row_str: desired value in the row
+        :param colidx: desired column to check, default is 0
         :return: columnid (0), rowid of the match value
         """
         for rowidx in range(sheet.nrows):
-            if sheet.cell_value(rowidx, 0) == row_str:
+            if sheet.cell_value(rowidx, colid) == row_str:
                 return rowidx
-

@@ -59,15 +59,9 @@ def run():
     state_tree, state_index, state_polys = load_filt_data.load_states(return_polys=True)
     found_states = location_checker.points_in_polytree(usr_data['route'], state_tree, state_index)
 
+
     # mapping state abbr to statefp
     found_state_fps = [str(cfg.ST_ABBRS[st]).zfill(2) for st in found_states]
-    # locating counties
-    county_tree, county_index, county_polys = load_filt_data.load_counties(found_state_fps, return_polys=True)
-    found_counties = location_checker.points_in_polytree(usr_data['route'], county_tree, county_index)
-
-    #
-    print("Located the following states:")
-    print("note: general state info is not included yet. Check rdfgs.rdforum.org for state summaries")
 
     rdfgs = load_rdfgs_xls.Rdfgs_Xl()
     state_results = []
@@ -79,5 +73,26 @@ def run():
 
     tabulate_result(state_results, title="State Police")
     visualize.visualize(state_polys, found_states=list(found_states.keys()), route=usr_data)
+
+    # locating counties
+    county_tree, county_index, county_polys = load_filt_data.load_counties(found_state_fps, return_polys=True)
+
+    # can reduce compute power by loading each found state as its own polytree, then checking the coords returned
+    #  for said state in found_states
+    found_counties = location_checker.points_in_polytree(usr_data['route'], county_tree, county_index)
+    print(found_counties)
+
+
+   # TODO iterate over counties found
+
+
+
+    exit()
+    print("Located the following states:")
+    print("note: general state info is not included yet. Check rdfgs.rdforum.org for state summaries")
+
+    county_results = {}
+
+
 
 

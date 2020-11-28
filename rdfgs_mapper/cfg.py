@@ -3,9 +3,10 @@ import os.path
 
 DATA_FOLDER = os.path.join(os.path.dirname(__file__), 'rdfgs_data')
 
-_DATA = namedtuple('DATA', ['STATE_SHP', 'COUNTY_SHP', 'RDFGS'])
+_DATA = namedtuple('DATA', ['STATE_SHP', 'COUNTY_SHP', 'COUNTY_GEOIDS', 'RDFGS'])
 DATA = _DATA(STATE_SHP=os.path.join(DATA_FOLDER, "cb_2018_us_state_500k", "cb_2018_us_state_500k.shp"),
              COUNTY_SHP=os.path.join(DATA_FOLDER, "cb_2018_us_county_500k", "cb_2018_us_county_500k.shp"),
+             COUNTY_GEOIDS=os.path.join(DATA_FOLDER, "county_geoid_2018.json"),
              RDFGS=os.path.join(DATA_FOLDER, "RDFGS-Archive.xls"))
 
 STATE_ID_ABBR = {28: 'MS', 37: 'NC', 40: 'OK', 51: 'VA', 54: 'WV', 22: 'LA', 26: 'MI', 25: 'MA', 16: 'ID', 12: 'FL',

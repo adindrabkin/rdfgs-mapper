@@ -58,8 +58,19 @@ def load_counties(stateFPs, return_polys=False):
     """
     load a specific states' counties
     :param stateFPs: [stateFP, stateFP] - the states to grab counties of (can be set or list)
-    :return: polygons
+    :return: STRTree of county polygons, {county_polygon.centroid.coords: county_geoid}
     """
+
+    """
+    there are a few counties with multiple ids...
+    29:St. Louis:29510 (st. louis) ,29189 (st. louis county)
+    24:Baltimore:24510 (baltimore),24005(baltimore county)
+    51:Fairfax:51600 (Fairfax) ,51059 (Fairfax county)
+    51:Richmond:51760 (richmond) ,51159 (richmond county)
+    51:Roanoke:51770 (roanoke),51161 (roanoke county)
+    51:Franklin:51620 (franklin), 51067 (franklin county)
+    """
+    ignore_geoid = {"29510", "24510", "51600", "51760", "51770", "51620"}
 
     polys = gpd.read_file(cfg.DATA.COUNTY_SHP)
 
@@ -73,7 +84,12 @@ def load_counties(stateFPs, return_polys=False):
     county_index = {}
     for i in polys.itertuples():
         # for debugging, it is recommended to use the tool "county_finder.py" -- searches a county by geoid
+        # TODO when switching to a polytree per state system, use the geoid
         this_county_geoid = i.GEOID  # geoid is "STATEFP" + "COUNTYFP"
+
+        # skipping geoids that should be ignored
+        if this_county_geoid in ignore_geoid:
+            continue
 
         # if it is a multipolygon
         if type(i.geometry) == MultiPolygon:
@@ -95,3 +111,14 @@ def load_counties(stateFPs, return_polys=False):
     if return_polys:
         return tree, county_index, polys
     return tree, county_index
+
+def load_county_geoid(stateFPs):
+    """
+    load a json containing {state: {geoid: county_name}}
+    :param stateFPs: list/dict of stateFPs (ca
+    :return: {statefp: {geoid: county_name}}
+    """
+    import json
+    with open(cfg.DATA.COUNTY_GEOIDS) as f:
+        geos = json.load(f)
+    return {statefp: geos.get(str(statefp).zfill(2)) for statefp in stateFPs}
