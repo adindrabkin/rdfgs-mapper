@@ -35,6 +35,11 @@ f. Click the box that says "entire map" and change it to Directions from [locati
 g. Check the box that says "Export as KML instead of KMZ"\
 e. Download it!\
 
+#### Special Mac Steps (3b)
+This should fix any fiona/geopandas issues:\
+brew install glad
+pip3 install glad
+
 
 #### Special Windows Steps (3b)
 Make sure NONE of the following have older versions installed (you may need to manually remove older versions of python). Once done, do the following commands, in the following order:\
