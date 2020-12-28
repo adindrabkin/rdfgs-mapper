@@ -3,9 +3,10 @@ main file fur running the rdfgs script
 """
 import sys
 
+import fiona  # needs to be imported before geopandas for some reason
+from rdfgs_mapper.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
 import rdfgs_mapper.rdfgs_mapper.location_checker as location_checker
 from rdfgs_mapper import cfg
-from rdfgs_mapper.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
 from rdfgs_mapper.visualize import visualize
 
 
@@ -80,7 +81,7 @@ def run():
     # can reduce compute power by loading each found state as its own polytree, then checking the coords returned
     #  for said state in found_states
     found_counties = location_checker.points_in_polytree(usr_data['route'], county_tree, county_index)
-    print(found_counties)
+    # print(found_counties)
 
 
    # TODO iterate over counties found
