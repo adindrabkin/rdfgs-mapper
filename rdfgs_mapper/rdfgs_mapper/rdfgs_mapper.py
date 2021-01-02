@@ -75,13 +75,30 @@ def run():
     tabulate_result(state_results, title="State Police")
     visualize.visualize(state_polys, found_states=list(found_states.keys()), route=usr_data)
 
-    # locating counties
-    county_tree, county_index, county_polys = load_filt_data.load_counties(found_state_fps, return_polys=True)
+    # only loading the counties trees that exist within found_state_fps
+    # state_county_trees = [@CountyTree] for each state
+    state_county_trees = load_filt_data.load_counties(found_state_fps)
 
-    # can reduce compute power by loading each found state as its own polytree, then checking the coords returned
-    #  for said state in found_states
-    found_counties = location_checker.points_in_polytree(usr_data['route'], county_tree, county_index)
-    # print(found_counties)
+    found_counties = {}  # {"statefp": {"county"}}
+
+    # iterating over the county data for each state located
+    for st in state_county_trees:  # for each @CountyTree
+        state_abbr = cfg.STATE_ID_ABBR[int(st.state_fp)]  # i.e 6 -> CA since found_states is by abbr
+        # found_states[st.state_fp] refers to the points confirmed to be in the current state
+        found_counties = location_checker.points_in_polytree(found_states[state_abbr],
+                                                             st.tree,
+                                                             st.county_index,
+                                                             save_cords=False)
+        print(found_counties)
+        exit()
+
+
+    found_county_geos = [county for county in found_counties]
+
+    for county in found_counties:
+        county_police = rdfgs.get_county_info(state, county)
+        state_police['name'] = state
+        state_results.append(state_police)
 
 
    # TODO iterate over counties found

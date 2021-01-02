@@ -2,6 +2,7 @@ from rdfgs_mapper import cfg
 import geopandas as gpd
 from shapely.strtree import STRtree
 from shapely.geometry import MultiPolygon
+from dataclasses import dataclass
 
 """
 loading for time complexity
@@ -18,7 +19,7 @@ def load_states(return_polys=False):
     """
     loads the state shp file as a STRTree, and as an index
     :param return_polys: return STRtree, index, raw_polys
-    :return: STRTree of state polygons, {state_polygon.centroid.coords: state_abbr}
+    :return: STRTree of state polygons, {state_polygon.centroid.coords: state_abbr}, polys
     :note: there are multiple polygons per state, as multipolygons cant be added to an strtree
     """
     # using geopandas to load shp file since this isn't 2010
@@ -54,11 +55,70 @@ def load_states(return_polys=False):
     return tree, state_index
 
 
-def load_counties(stateFPs, return_polys=False):
+"""
+using a dataclass for the counties each state contains
+"""
+
+
+@dataclass()
+class CountyTree:
+    tree = None
+    county_index = {}  # {county_polygon.centroid.coords: county_geoid}
+    polys = None
+
+    def __init__(self, state_fp, polys, store_polys=False, ignore_geoid=set()):
+        """
+        :param state_fp: fp (XY) of the state
+        :param polys: raw polygons from shapefile
+        :param store_polys: if the raw polygons should be stored or discarded
+        :param ignore_geoid: set of str GEOIDs {'GEOID', 'GEOID'} - to be removed soon
+        """
+        self.state_fp = state_fp
+        if store_polys:
+            self.polys = polys  # raw polygons
+
+        self.county_index = {}  # {county_polygon.centroid.coords: county_geoid}
+        poly_list = []  # required for creating the tree
+        for i in polys.itertuples():
+            this_county_geoid = i.GEOID  # geoid is "STATEFP" + "COUNTYFP"
+            if this_county_geoid in ignore_geoid:
+                continue
+
+            # if it is a multipolygon
+            if type(i.geometry) == MultiPolygon:
+                # add each polygon as the state, only if their size is decent
+                for poly in i.geometry:
+                    if len(poly.exterior.coords) > 5:  # can be adjusted; performance isnt hit; may miss square counties
+                        # len > {1,..,5} all are within 15 total polys??
+                        self.county_index[poly.centroid.coords[0]] = this_county_geoid
+                        poly_list.append(poly)
+
+            else:
+                # loading the individual polygon
+                poly = i.geometry
+                self.county_index[poly.centroid.coords[0]] = this_county_geoid
+                poly_list.append(poly)
+
+        self.tree = STRtree(poly_list)
+
+    def get_county_name(self, geoids):
+        """
+        get the county names corresponding to the geoid(s) given (set/list/str)
+        :param geoids: "GEOID"/{"GEOID"}/["GEOID"]
+        :return: {geoid: countyname}
+        """
+        geoids = set(geoids)
+        geo_dict = {}
+        for geo in self.polys[self.polys.GEOID.isin(geoids)]:
+            geo_dict[geo.GEOID] = geo.NAME
+        return geo_dict
+
+
+def load_counties(stateFPs):
     """
     load a specific states' counties
     :param stateFPs: [stateFP, stateFP] - the states to grab counties of (can be set or list)
-    :return: STRTree of county polygons, {county_polygon.centroid.coords: county_geoid}
+    :return: list of CountyTree dataclasses [@CountyTree]
     """
 
     """
@@ -77,40 +137,22 @@ def load_counties(stateFPs, return_polys=False):
     # county polyfile stores stateIDs as str, with an zfill of 2
     str_state_fps = [str(st).zfill(2) for st in stateFPs]
 
-    # removing any rows with STATEFP not in static state id map (cfg.ST_ABBRS)
+    # removing any rows with STATEFP not in :param stateFPs:
     polys = polys[polys.STATEFP.isin(str_state_fps)]
 
-    poly_list = []
-    county_index = {}
-    for i in polys.itertuples():
-        # for debugging, it is recommended to use the tool "county_finder.py" -- searches a county by geoid
-        # TODO when switching to a polytree per state system, use the geoid
-        this_county_geoid = i.GEOID  # geoid is "STATEFP" + "COUNTYFP"
+    # TODO remove geoid by doing a set operation (not isin) and then remove the check from the dataclass
+    # polys = polys[polys.GEOID.isin(ignore_geoid)]
 
-        # skipping geoids that should be ignored
-        if this_county_geoid in ignore_geoid:
-            continue
+    # iterate over stateFPs, creating a CountyTree (containing all counties in state X) #
+    state_county_trees = []  # @CountyTree
+    for fp in stateFPs:
+        these_counties = polys[polys.STATEFP == fp]  # SELECT * ... WHERE STATEFP = fp
+        county_tree = CountyTree(fp, these_counties, ignore_geoid=ignore_geoid)
+        state_county_trees.append(county_tree)
 
-        # if it is a multipolygon
-        if type(i.geometry) == MultiPolygon:
-            # add each polygon as the state, only if their size is decent
-            for poly in i.geometry:
-                if len(poly.exterior.coords) > 5:  # can be adjusted; performance isnt hit; may miss square counties
-                    # len > {1,..,5} all are within 15 total polys??
-                    county_index[poly.centroid.coords[0]] = this_county_geoid
-                    poly_list.append(poly)
+    return state_county_trees
 
-        else:
-            # loading the individual polygon
-            poly = i.geometry
-            county_index[poly.centroid.coords[0]] = this_county_geoid
-            poly_list.append(poly)
 
-    tree = STRtree(poly_list)
-    # returning the original polys for visualizing, if requested
-    if return_polys:
-        return tree, county_index, polys
-    return tree, county_index
 
 def load_county_geoid(stateFPs):
     """

@@ -13,7 +13,7 @@ def linestring_to_cordlist(linestring):
     """
     return [Point(tuple(list(cord[:-1]))) for cord in linestring.coords]
 
-def points_in_polytree(usr_locs, poly_tree, poly_guide):
+def points_in_polytree(usr_locs, poly_tree, poly_guide, save_cords=True):
     """
     :param line: LineString (userdata) or [Point]
     :param poly_tree: Packed STRTree of Polygons to compare against
@@ -27,7 +27,11 @@ def points_in_polytree(usr_locs, poly_tree, poly_guide):
         # TODO this should skip cords that are too close together to save compute time (low risk points)
         res = poly_tree.query(cord)
         this_geom_id = poly_guide[tuple(res[0].centroid.coords)[0]]  # state id (center of the state)
-        local_to_cord[this_geom_id].append(cord)
+        if save_cords:
+            local_to_cord[this_geom_id].append(cord)
+        else:
+            local_to_cord[this_geom_id] = []  # should revisit how this is done
+
     return local_to_cord
 
 
