@@ -65,12 +65,12 @@ using a dataclass for the counties each state contains
 class CountyTree:
     tree = None
     county_index = {}  # {county_polygon.centroid.coords: county_geoid}
-    geoseries = None
+    gdf = None
 
-    def __init__(self, state_fp, geodataframe, store_polys=False, ignore_geoid=set()):
+    def __init__(self, state_fp, gdf, store_polys=False, ignore_geoid=set()):
         """
         :param state_fp: fp (XY) of the state
-        :param geodataframe: raw geodataframe from shapefile
+        :param gdf: raw geodataframe from shapefile
         :param store_polys: if geoseries.geometry should be kept (geoseries kept regardless)
         :param ignore_geoid: set of str GEOIDs {'GEOID', 'GEOID'} - to be removed soon
         """
@@ -79,7 +79,7 @@ class CountyTree:
 
         self.county_index = {}  # {county_polygon.centroid.coords: county_geoid}
         poly_list = []  # required for creating the tree
-        for i in geodataframe.itertuples():
+        for i in gdf.itertuples():
             this_county_geoid = i.GEOID  # geoid is "STATEFP" + "COUNTYFP"
             if this_county_geoid in ignore_geoid:
                 continue
@@ -103,8 +103,8 @@ class CountyTree:
 
         #  deleting the geometry polygons if store_polys is false
         if not store_polys:
-            geodataframe = geodataframe.drop(columns=["geometry"])
-        self.geodataframe = geodataframe  # raw polygons
+            gdf = gdf.drop(columns=["geometry"])
+        self.gdf = gdf  # raw polygons
 
     def get_county_name(self, geoids):
         """
@@ -114,7 +114,7 @@ class CountyTree:
         """
         geoids = set(geoids)
         geo_dict = {}
-        for geo in self.geoseries[self.geoseries.GEOID.isin(geoids)]:
+        for geo in self.gdf[self.gdf.GEOID.isin(geoids)].itertuples():
             geo_dict[geo.GEOID] = geo.NAME
         return geo_dict
 
