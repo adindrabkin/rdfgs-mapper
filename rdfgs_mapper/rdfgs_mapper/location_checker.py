@@ -15,7 +15,7 @@ def linestring_to_cordlist(linestring):
 
 def points_in_polytree(usr_locs, poly_tree, poly_guide, save_cords=True):
     """
-    :param line: LineString (userdata) or [Point]
+    :param usr_locs: LineString (userdata) or [Point]
     :param poly_tree: Packed STRTree of Polygons to compare against
     :param poly_guide: {(x,y): state_id} - (x,y) is the center point of the Polygon
     :return: {locality ids: [coordinates]}
@@ -24,9 +24,16 @@ def points_in_polytree(usr_locs, poly_tree, poly_guide, save_cords=True):
     if type(usr_locs) == LineString: # LineString -> [Point]
         usr_locs = linestring_to_cordlist(usr_locs)
     for cord in usr_locs:
-        # TODO this should skip cords that are too close together to save compute time (low risk points)
+        # eventually this should skip cords that are too close together to save compute time (low risk points)
         res = poly_tree.query(cord)
-        this_geom_id = poly_guide[tuple(res[0].centroid.coords)[0]]  # state id (center of the state)
+        # TODO remove me when done debugging missing polys
+        try:
+            this_geom_id = poly_guide[tuple(res[0].centroid.coords)[0]]  # state id (center of the state)
+        except:
+            print(cord)
+            print(poly_tree.query(cord))
+            print(poly_tree.nearest(cord))
+
         if save_cords:
             local_to_cord[this_geom_id].append(cord)
         else:

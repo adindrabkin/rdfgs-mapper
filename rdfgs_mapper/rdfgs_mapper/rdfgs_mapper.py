@@ -39,6 +39,7 @@ def tabulate_result(res, title=None):
     table.maxwidth = width
     print(table)
 
+
 def run():
     """
     extract the route from the user path
@@ -60,7 +61,6 @@ def run():
     state_tree, state_index, state_polys = load_filt_data.load_states(return_polys=True)
     found_states = location_checker.points_in_polytree(usr_data['route'], state_tree, state_index)
 
-
     # mapping state abbr to statefp
     found_state_fps = [str(cfg.ST_ABBRS[st]).zfill(2) for st in found_states]
 
@@ -79,38 +79,44 @@ def run():
     # state_county_trees = [@CountyTree] for each state
     state_county_trees = load_filt_data.load_counties(found_state_fps)
 
-    found_counties = {}  # {"statefp": {"county"}}
+    found_st_counties = {}  # {"state_abbr": {"countyname": rdfgsdata}}
 
     # iterating over the county data for each state located
     for st in state_county_trees:  # for each @CountyTree
         state_abbr = cfg.STATE_ID_ABBR[int(st.state_fp)]  # i.e 6 -> CA since found_states is by abbr
+
+        # TODO verify that the tree and county index match... missing data between them
         # found_states[st.state_fp] refers to the points confirmed to be in the current state
+        from shapely.geometry import Point
+        """
+        debugging info
+        location checker query for (-122.89439, 46.26969) returns nothing
+        but (st.tree.nearest(Point(-122.89439, 46.26969)).centroid) exists in st.county_index (-122.68100236398334, 46.1932415490334)
+        """
+        # a = (st.tree.nearest(Point(-122.89439, 46.26969)).centroid)
+        # print(a)
+        # print(st.county_index)
+        # exit()
         found_counties = location_checker.points_in_polytree(found_states[state_abbr],
                                                              st.tree,
                                                              st.county_index,
                                                              save_cords=False)
-        print(found_counties)
-        exit()
 
+        # {"state_abbr": {"county_name": None}
+        found_st_counties[state_abbr] = st.get_county_name(set(found_counties.keys()))
+    import json
+    print(json.dumps(found_st_counties, indent=4))
 
-    found_county_geos = [county for county in found_counties]
-
+    exit()
     for county in found_counties:
         county_police = rdfgs.get_county_info(state, county)
         state_police['name'] = state
         state_results.append(state_police)
 
-
-   # TODO iterate over counties found
-
-
+    # TODO iterate over counties found
 
     exit()
     print("Located the following states:")
     print("note: general state info is not included yet. Check rdfgs.rdforum.org for state summaries")
 
     county_results = {}
-
-
-
-
