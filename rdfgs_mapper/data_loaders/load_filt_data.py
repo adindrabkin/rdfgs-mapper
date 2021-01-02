@@ -1,5 +1,6 @@
 from rdfgs_mapper import cfg
 import geopandas as gpd
+from pandas import DataFrame
 from shapely.strtree import STRtree
 from shapely.geometry import MultiPolygon
 from dataclasses import dataclass
@@ -64,22 +65,21 @@ using a dataclass for the counties each state contains
 class CountyTree:
     tree = None
     county_index = {}  # {county_polygon.centroid.coords: county_geoid}
-    polys = None
+    geoseries = None
 
-    def __init__(self, state_fp, polys, store_polys=False, ignore_geoid=set()):
+    def __init__(self, state_fp, geodataframe, store_polys=False, ignore_geoid=set()):
         """
         :param state_fp: fp (XY) of the state
-        :param polys: raw polygons from shapefile
-        :param store_polys: if the raw polygons should be stored or discarded
+        :param geodataframe: raw geodataframe from shapefile
+        :param store_polys: if geoseries.geometry should be kept (geoseries kept regardless)
         :param ignore_geoid: set of str GEOIDs {'GEOID', 'GEOID'} - to be removed soon
         """
         self.state_fp = state_fp
-        if store_polys:
-            self.polys = polys  # raw polygons
+
 
         self.county_index = {}  # {county_polygon.centroid.coords: county_geoid}
         poly_list = []  # required for creating the tree
-        for i in polys.itertuples():
+        for i in geodataframe.itertuples():
             this_county_geoid = i.GEOID  # geoid is "STATEFP" + "COUNTYFP"
             if this_county_geoid in ignore_geoid:
                 continue
@@ -101,6 +101,11 @@ class CountyTree:
 
         self.tree = STRtree(poly_list)
 
+        #  deleting the geometry polygons if store_polys is false
+        if not store_polys:
+            geodataframe = geodataframe.drop(columns=["geometry"])
+        self.geodataframe = geodataframe  # raw polygons
+
     def get_county_name(self, geoids):
         """
         get the county names corresponding to the geoid(s) given (set/list/str)
@@ -109,7 +114,7 @@ class CountyTree:
         """
         geoids = set(geoids)
         geo_dict = {}
-        for geo in self.polys[self.polys.GEOID.isin(geoids)]:
+        for geo in self.geoseries[self.geoseries.GEOID.isin(geoids)]:
             geo_dict[geo.GEOID] = geo.NAME
         return geo_dict
 
