@@ -10,7 +10,7 @@ A tool to map rdforum.org RDFGS based on a provided route
 4. run "pip3 install ." in the rdfgs-mapper main directory
 
 #### usage
-$> rdfgs-mapper [path_to_kml_file.kml]
+`rdfgs-mapper [path_to_kml_file.kml]`
 
 ### Required data (not automated yet)
 #### 1. A US state shape file from the following URL  - INCLUDED IN ALPHA VERSION
@@ -23,7 +23,7 @@ a. Unzip this file and place it in the "data" folder, specifically as data/cb_20
 #### 2. RDFGS-Archive.xls - INCLUDED IN ALPHA VERSION
 This is currently provided, but is from 2017, and is primarily for testing rather than accuracy. The current version was taken from https://www.rdforum.org/threads/59672/, then converted to xls to work with python
 
-#### 3. A route of your choosing! This is the fun part.\
+#### 3. A route of your choosing! This is the fun part.
 Here is how it's done:\
 a. Go to google.com/maps/d \
 b. click "Create a new map" in the top left. Wait for the map to appear\
@@ -33,24 +33,24 @@ d. On the left side of the screen, there is now a Untitled layer that says "Driv
 e. in the top left, to the right of "untitled map" click the 3 dots. A dropdown box should appear. Click "Export to KML/KMZ"\
 f. Click the box that says "entire map" and change it to Directions from [location] to [location]\
 g. Check the box that says "Export as KML instead of KMZ"\
-e. Download it!\
+e. Download it!
 
 #### Special Mac Steps (3b)
 This should fix any fiona/geopandas issues:\
-brew install glad
-pip3 install glad
+`brew install glad`\
+`pip3 install glad`
 
 
 #### Special Windows Steps (3b)
 Make sure NONE of the following have older versions installed (you may need to manually remove older versions of python). Once done, do the following commands, in the following order:\
-pip install wheel\
-pip install pipwin
+`pip install wheel`\
+`pip install pipwin`
 
-pipwin install numpy\
-pipwin install pandas\
-pipwin install shapely\
-pipwin install gdal\
-pipwin install fiona\
-pipwin install pyproj\
-pipwin install descartes\
-pipwin install geopandas
+`pipwin install numpy`\
+`pipwin install pandas`\
+`pipwin install shapely`\
+`pipwin install gdal`\
+`pipwin install fiona`\
+`pipwin install pyproj`\
+`pipwin install descartes`\
+`pipwin install geopandas`
