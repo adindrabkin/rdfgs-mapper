@@ -13,6 +13,7 @@ setuptools.setup(
         "matplotlib", # required for visualize
         "beautifultable",
         "descartes",  # required for visualize
+        "click"
     ],
     include_package_data=True,
 #    package_data={

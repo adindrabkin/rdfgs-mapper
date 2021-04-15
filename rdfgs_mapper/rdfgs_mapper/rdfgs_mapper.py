@@ -3,6 +3,7 @@ main file fur running the rdfgs script
 """
 import sys
 
+import click
 import fiona  # needs to be imported before geopandas for some reason
 from rdfgs_mapper.data_loaders import load_filt_data, load_user_route, load_rdfgs_xls
 import rdfgs_mapper.rdfgs_mapper.location_checker as location_checker
@@ -39,8 +40,9 @@ def tabulate_result(res, title=None):
     table.maxwidth = width
     print(table)
 
-
-def run():
+@click.command()
+@click.argument("user_kml", type=click.Path(exists=True))
+def run(user_kml):
     """
     extract the route from the user path
     run it against the states
@@ -50,13 +52,7 @@ def run():
             save each county
 
     """
-    # TODO this should be overhauled to argparse
-    try:
-        usr_kml = sys.argv[1]
-    except:
-        print("load_user_data.py ran directly without a kml arg provided")
-        exit(1)
-    usr_data = load_user_route.run(usr_kml)  # {'route': linestring, 'start': point, 'end': point}
+    usr_data = load_user_route.run(user_kml)  # {'route': linestring, 'start': point, 'end': point}
     print(f"locating {usr_data['start']} to {usr_data['end']}")
     state_tree, state_index, state_polys = load_filt_data.load_states(return_polys=True)
     found_states = location_checker.points_in_polytree(usr_data['route'], state_tree, state_index)
@@ -73,7 +69,6 @@ def run():
         state_results.append(state_police)
 
     tabulate_result(state_results, title="State Police")
-    visualize.visualize(state_polys, found_states=list(found_states.keys()), route=usr_data)
 
     # only loading the counties trees that exist within found_state_fps
     # state_county_trees = [@CountyTree] for each state
@@ -105,7 +100,12 @@ def run():
         # {"state_abbr": {"county_name": None}
         found_st_counties[state_abbr] = st.get_county_name(set(found_counties.keys()))
     import json
+    # TODO counties should print in the order the route finds them
     print(json.dumps(found_st_counties, indent=4))
+    
+    # visualize route
+    visualize.visualize(state_polys, found_states=list(found_states.keys()), route=usr_data)
+
 
     exit()
     for county in found_counties:
