@@ -1,6 +1,8 @@
 # rdfgs-mapper
 A tool to map rdforum.org RDFGS based on a provided route
 
+NOTE: currently master is not working. Please use `county-dev` for now as a workaround.
+
 ### How to use
 #### Pre-reqs
 1. Download the latest version of python (https://www.python.org/)
