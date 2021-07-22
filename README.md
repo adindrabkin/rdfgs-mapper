@@ -1,7 +1,8 @@
 # rdfgs-mapper
 A tool to map rdforum.org RDFGS based on a provided route. This tool will tell you the states (including their respective rdfgs data) and counties (rdfgs data in progress) your route passes through
 
-NOTE: currently master is not working. Please use `county-dev` for now as a workaround.
+NOTE: currently master is not working. Please use `county-dev` for now as a workaround.\
+NOTE 2: rdfgs-mapper was written purely for the usefulness of the results it provides. The code requires a significant amount of cleanup and basic optimization to be presentable.  
 
 ### How to use
 #### Pre-reqs
